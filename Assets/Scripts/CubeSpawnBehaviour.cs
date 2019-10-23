@@ -15,12 +15,15 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 	private Quaternion initialCubeRotation;
 	private float cubeHeight;
 	private int numCubesSpawned = 1;
+	private RigidbodyConstraints InitialCubeRigidbodyConstraints;
 
 	// Use this for initialization
 	void Start () {
 		cubeHeight = cube.GetComponent<Collider>().bounds.size.y;
 		initialCubePosition = cube.transform.position;
 		initialCubeRotation = cube.transform.rotation;
+		InitialCubeRigidbodyConstraints = cube.GetComponent<Rigidbody>().constraints;
+
 		dropButton.onClick.AddListener(onUserSpawnEvent);
 	}
 	
@@ -35,7 +38,7 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 	void onUserSpawnEvent() {
 
 		Debug.Log("CubeSpawnBehaviour: spawning cube");
-		Instantiate(cube, new Vector3(
+		GameObject newCube = Instantiate(cube, new Vector3(
 			initialCubePosition.x,
 			initialCubePosition.y + Mathf.Max(0, numCubesSpawned - SKIP_CAMERA_MOVE_UNTIL) * cubeHeight,
 			initialCubePosition.z
@@ -50,6 +53,9 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 			);
 		}
 
+		Rigidbody rb = newCube.GetComponent<Rigidbody>();
+		rb.constraints = InitialCubeRigidbodyConstraints;
+		newCube.name = "Cube #" + numCubesSpawned;
 		
 		numCubesSpawned += 1;
 	}
