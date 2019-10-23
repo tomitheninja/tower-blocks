@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class CubeSpawnBehaviour : MonoBehaviour {
 
-	const int SKIP_CAMERA_MOVE_UNTIL = 3;
+	const int SKIP_CAMERA_MOVE_UNTIL = 2;
 
 	public GameObject cube;
 	public Button dropButton;
