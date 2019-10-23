@@ -11,6 +11,8 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 	public Button dropButton;
 	public Camera cam;
 
+	private GameObject latestCube;
+	private bool initialUseGravity;
 	private Vector3 initialCubePosition;
 	private Quaternion initialCubeRotation;
 	private float cubeHeight;
@@ -19,24 +21,44 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		cubeHeight = cube.GetComponent<Collider>().bounds.size.y;
+		Rigidbody rb = cube.GetComponent<Rigidbody>();
+		Collider coll = cube.GetComponent<Collider>();
+
+		latestCube = cube;
+		cubeHeight = coll.bounds.size.y;
 		initialCubePosition = cube.transform.position;
 		initialCubeRotation = cube.transform.rotation;
-		initialCubeRigidbodyConstraints = cube.GetComponent<Rigidbody>().constraints;
+		initialUseGravity = rb.useGravity;
+		initialCubeRigidbodyConstraints = rb.constraints;
 
-		dropButton.onClick.AddListener(onUserSpawnEvent);
+		dropButton.onClick.AddListener(onDropEvent);
+
+		rb.useGravity = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Space)) { onUserSpawnEvent(); }
+		if (Input.GetKeyDown(KeyCode.Space)) { onDropEvent(); }
 	}
 
 	/// <summary>
 	/// Handler for user generated spawn event
 	/// </summary>
-	void onUserSpawnEvent() {
+	void onDropEvent() {
+		Debug.Log("CubeSpawnBehaviour: Dropping old cube");
+		latestCube.GetComponent<Rigidbody>().useGravity = initialUseGravity;
+		latestCube.GetComponent<FloatSideways>().enabled = false;
 
+		StartCoroutine(createNewCubeAfterDelay(3.5f));
+
+	}
+
+	IEnumerator createNewCubeAfterDelay(float delay) {
+		yield return new WaitForSeconds(delay);
+		createNewCube();
+	}
+
+	void createNewCube() {
 		Debug.Log("CubeSpawnBehaviour: spawning cube");
 		GameObject newCube = Instantiate(cube, new Vector3(
 			initialCubePosition.x,
@@ -57,6 +79,10 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 		rb.constraints = initialCubeRigidbodyConstraints;
 		newCube.name = "Cube #" + numCubesSpawned;
 		
+		rb.useGravity = false;
+		rb.GetComponent<FloatSideways>().enabled = true;
+
 		numCubesSpawned += 1;
+		latestCube = newCube;
 	}
 }
