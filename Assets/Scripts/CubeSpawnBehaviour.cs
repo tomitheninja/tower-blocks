@@ -15,14 +15,14 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 	private Quaternion initialCubeRotation;
 	private float cubeHeight;
 	private int numCubesSpawned = 1;
-	private RigidbodyConstraints InitialCubeRigidbodyConstraints;
+	private RigidbodyConstraints initialCubeRigidbodyConstraints;
 
 	// Use this for initialization
 	void Start () {
 		cubeHeight = cube.GetComponent<Collider>().bounds.size.y;
 		initialCubePosition = cube.transform.position;
 		initialCubeRotation = cube.transform.rotation;
-		InitialCubeRigidbodyConstraints = cube.GetComponent<Rigidbody>().constraints;
+		initialCubeRigidbodyConstraints = cube.GetComponent<Rigidbody>().constraints;
 
 		dropButton.onClick.AddListener(onUserSpawnEvent);
 	}
@@ -54,7 +54,7 @@ public class CubeSpawnBehaviour : MonoBehaviour {
 		}
 
 		Rigidbody rb = newCube.GetComponent<Rigidbody>();
-		rb.constraints = InitialCubeRigidbodyConstraints;
+		rb.constraints = initialCubeRigidbodyConstraints;
 		newCube.name = "Cube #" + numCubesSpawned;
 		
 		numCubesSpawned += 1;
